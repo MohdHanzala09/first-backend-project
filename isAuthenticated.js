@@ -1,20 +1,22 @@
 import user from "./Models/userShema.js";
+import jwt from 'jsonwebtoken';
 
 export const isAuthenticated = async (req,res,next) => {
     try {
         const info = req.cookies;
-        
+        // console.log(info);
         // Check if token exists
-        if (!info || !info.token || !info.token.email) {
-            return res.status(401).json({msg:"Please login first"});
+        if (!info) {
+            return res.status(401).json({msg:"Please login first I"});
         }
         
-        const email = info.token.email;
-        console.log(email);
+        const userInfo = jwt.verify(info.token,process.env.JWT_SECRET_KEY);
+        const email = userInfo.email;
+        
         const isAuth = await user.findOne({email});
         
         if(!isAuth) {
-            return res.status(401).json({msg:"Please login first"});
+            return res.status(401).json({msg:"Please login first II"});
         }
         
         // If it's being used as middleware, call next()
